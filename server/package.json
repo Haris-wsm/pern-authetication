@@ -4,7 +4,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
-    "test": "cross-env NODE_ENV=test jest ----watchAll --verbose",
+    "test": "cross-env NODE_ENV=test jest --watchAll --verbose",
+    "test:staging": "cross-env NODE_ENV=test jest --all --runInBand --forceExit",
     "migrate:test": "cross-env NODE_ENV=test npx sequelize db:migrate"
   },
   "jest": {

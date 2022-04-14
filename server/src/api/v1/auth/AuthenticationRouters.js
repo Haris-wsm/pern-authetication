@@ -32,9 +32,19 @@ router.post(
 
     const token = await TokenService.createToken(user);
 
-    // res.send({});
     res.send({ id: user.id, username: user.username, token });
   }
 );
+
+router.post('/logout', async (req, res, next) => {
+  const authoriztion = req.headers.authorization;
+
+  if (authoriztion) {
+    const token = authoriztion.substring(7);
+    await TokenService.deleteToken(token);
+  }
+
+  res.send();
+});
 
 module.exports = router;

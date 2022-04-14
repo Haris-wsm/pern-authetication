@@ -78,7 +78,7 @@ describe('User Registration', () => {
 
   it('save username and email in database', async () => {
     await postUser();
-    const users = await User.findAll({ raw: true });
+    const users = await User.findAll();
     const savedUser = users[0];
 
     expect(savedUser.username).toBe('user1');
@@ -87,7 +87,7 @@ describe('User Registration', () => {
 
   it('hashs password in database', async () => {
     await postUser();
-    const users = await User.findAll({ raw: true });
+    const users = await User.findAll();
     const savedUser = users[0];
     expect(savedUser.password).not.toBe('P4ssword');
   });
@@ -139,7 +139,7 @@ describe('User Registration', () => {
   it('creates user inactive mode', async () => {
     await postUser();
 
-    const user = await User.findAll({ raw: true });
+    const user = await User.findAll();
 
     expect(user[0].inactive).toBe(true);
   });
@@ -147,14 +147,14 @@ describe('User Registration', () => {
   it('create users inactive mode even request contains inactive is false', async () => {
     await postUser({ ...user, inactive: false });
 
-    const response = await User.findAll({ raw: true });
+    const response = await User.findAll();
 
     expect(response[0].inactive).toBe(true);
   });
 
   it('create activation token for user', async () => {
     await postUser();
-    const response = await User.findAll({ raw: true });
+    const response = await User.findAll();
 
     expect(response[0].activationToken).toBeTruthy();
   });
@@ -190,7 +190,7 @@ describe('User Registration', () => {
 describe('Account activation', () => {
   it('activates the account when correct token is sent', async () => {
     await postUser();
-    let users = await User.findAll({ raw: true });
+    let users = await User.findAll();
     const token = users[0].activationToken;
 
     await request(app).post(`/api/v1/users/token/${token}`).send();
@@ -202,7 +202,7 @@ describe('Account activation', () => {
 
   it('removes user token from user table after successful activation', async () => {
     await postUser();
-    let users = await User.findAll({ raw: true });
+    let users = await User.findAll();
     const token = users[0].activationToken;
 
     await request(app).post(`/api/v1/users/token/${token}`).send();

@@ -1,6 +1,8 @@
 const request = require('supertest');
 const app = require('../app');
 const User = require('../api/v1/users/User');
+const Token = require('../api/v1/auth/Token');
+
 const bcrypt = require('bcrypt');
 
 const en = require('../../locals/en/translation.json');
@@ -14,6 +16,15 @@ const activeUser = {
   email: 'user1@mail.com',
   inactive: false,
   password: 'P4ssword'
+};
+
+const postLogout = (options = {}) => {
+  let agent = request(app).post('/api/v1/logout');
+
+  if (options.token) {
+    agent.set('Authorization', `Bearer ${options.token}`);
+  }
+  return agent.send();
 };
 
 const addUser = async (user = { ...activeUser }) => {
@@ -174,3 +185,25 @@ describe('Authentication', () => {
     expect(response.body.token).not.toBeUndefined();
   });
 });
+
+describe('Logout', () => {
+  it('return 200 ok when unauthorized request send for logout', async () => {
+    const response = await postLogout();
+
+    expect(response.status).toBe(200);
+  });
+
+  it('removes token from database', async () => {
+    await addUser();
+    const response = await postAuthentication({
+      email: 'user1@mail.com',
+      password: 'P4ssword'
+    });
+    const token = response.body.token;
+    await postLogout({ token: token });
+    const storedToken = await Token.findOne({ where: { token: token } });
+    expect(storedToken).toBeNull();
+  });
+});
+
+describe('Token Expiration', () => {});
