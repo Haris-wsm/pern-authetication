@@ -1,4 +1,4 @@
 module.exports = function AuthenticationException(message) {
-  this.status = 400;
+  this.status = 401;
   this.message = message || 'authentication_failure';
 };
