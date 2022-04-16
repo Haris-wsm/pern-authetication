@@ -40,23 +40,25 @@ const Login = () => {
               Password
             </label>
             <div className="d-flex justify-contents-center align-items-center">
-              <input
-                type={isShow ? 'text' : 'password'}
-                className="form-control"
-                id="username"
-                placeholder="Enter password"
-              />
-              <span
-                className="content-form-icon px-2"
-                role="button"
-                onClick={handleToggle}
-              >
-                {isShow ? (
-                  <i className="fa-solid fa-eye " />
-                ) : (
-                  <i className="fa-solid fa-eye-slash " />
-                )}
-              </span>
+              <div className="input-password w-100 bg-white h-auto d-flex align-items-center">
+                <input
+                  type={isShow ? 'text' : 'password'}
+                  className="form-control"
+                  id="username"
+                  placeholder="Enter password"
+                />
+                <span
+                  className="content-form-icon px-2"
+                  role="button"
+                  onClick={handleToggle}
+                >
+                  {isShow ? (
+                    <i className="fa-solid fa-eye " />
+                  ) : (
+                    <i className="fa-solid fa-eye-slash " />
+                  )}
+                </span>
+              </div>
             </div>
           </div>
           <div className="mb-4 w-100">

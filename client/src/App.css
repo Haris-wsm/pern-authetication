@@ -43,5 +43,9 @@
   flex-direction: column;
 }
 .content-form-icon {
-  color: #fff;
+  /* color: #fff; */
+}
+
+.input-password {
+  border-radius: 3px;
 }
