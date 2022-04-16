@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import InputFormPassword from '../components/form/InputFormPassword';
+import { LocalStorage } from '../contexts/useLocalStorage';
+import request from '../api/authReqest';
 
 const Register = () => {
-  const [isShow, setIsShow] = useState(false);
-
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [conFirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({
@@ -12,14 +14,51 @@ const Register = () => {
     confirmPassword: ''
   });
 
-  const handlePasswordConfirm = (e) => {
+  const { handleSetToken } = useContext(LocalStorage);
+
+  const handlePasswordConfirm = async (e) => {
     e.preventDefault();
 
     password !== conFirmPassword
       ? setErrors({ ...errors, confirmPassword: `Password does't match` })
       : setErrors({});
+    await handleSubmit();
+  };
 
-    console.log(errors);
+  const handleSubmit = async () => {
+    const body = {
+      username,
+      email,
+      password
+    };
+
+    console.log(body);
+
+    try {
+      const res = await request.post('/users', body);
+
+      console.log(res.data);
+    } catch (error) {
+      console.log(error.response.data);
+    }
+
+    // request.defaults.headers.common['Authorization'] = `Bearer `
+  };
+
+  const handleChangeUser = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const handleChangePassword = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleChangeEmail = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleChangeConfirmPassword = (e) => {
+    setConfirmPassword(e.target.value);
   };
 
   return (
@@ -29,7 +68,9 @@ const Register = () => {
         <h2 className="display-2 text-uppercase text-center text-white">
           REGISTER
         </h2>
-        <form className="content-form-card mt-2 px-2 py-1">
+        <div className="content-form-card mt-2 px-2 py-1" autoComplete="off">
+          <input type="text" style={{ display: 'none' }} />
+          <input type="password" style={{ display: 'none' }} />
           <div className="form-group mb-4 w-100">
             <label htmlFor="username" className="text-white">
               Username
@@ -39,46 +80,48 @@ const Register = () => {
               className="form-control"
               id="username"
               placeholder="Enter username"
-              onChange={(e) => setUsername(e.target.values)}
+              onChange={handleChangeUser}
               value={username}
               name="username"
+              autoComplete="rutjfkde"
+            />
+          </div>
+          <div className="form-group mb-4 w-100">
+            <label htmlFor="email" className="text-white">
+              Email
+            </label>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              placeholder="Enter email"
+              onChange={handleChangeEmail}
+              value={email}
+              name="email"
+              autoComplete="rutjfkde"
             />
           </div>
           <div className="form-group mb-4 w-100">
             <label htmlFor="password" className="text-white">
               Password
             </label>
-            <div className="d-flex justify-contents-center align-items-center">
-              <input
-                type={isShow ? 'text' : 'password'}
-                className="form-control"
-                id="username"
-                placeholder="Enter password"
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                name="password"
-              />
-            </div>
+            <InputFormPassword
+              value={password}
+              setPassword={setPassword}
+              id={'password'}
+            />
           </div>
 
           <div className="form-group mb-4 w-100">
-            <label htmlFor="password" className="text-white">
+            <label htmlFor="password-confirm" className="text-white">
               Confirm Password
             </label>
 
-            <input
-              type={isShow ? 'text' : 'password'}
-              className="form-control"
-              id="username"
-              placeholder="Enter Confirm password"
-              onChange={(e) => setConfirmPassword(e.target.value)}
+            <InputFormPassword
               value={conFirmPassword}
-              name="conFirmPassword"
+              setPassword={setPassword}
+              id={'password-confirm'}
             />
-
-            {errors.confirmPassword && (
-              <p className="text-danger">{errors.confirmPassword}</p>
-            )}
           </div>
 
           <div className="mb-4 w-100"></div>
@@ -87,7 +130,7 @@ const Register = () => {
               Submit
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </>
   );
