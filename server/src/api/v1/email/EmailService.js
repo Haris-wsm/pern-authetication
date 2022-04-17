@@ -12,7 +12,7 @@ const sendAccountActivation = async (email, token) => {
         Token is ${token}
         </div>
         <div>
-          <a href="http://localhost:8080/#/login?token=${token}">Activate</a>
+          <a href="http://localhost:3000/login?token=${token}">Activate</a>
         </div>
         `
   });

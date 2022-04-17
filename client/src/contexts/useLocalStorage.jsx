@@ -12,8 +12,15 @@ export const LocalStorageProvider = ({ children }) => {
     setToken(value);
   };
 
+  const clearToken = () => {
+    localStorage.removeItem('user');
+    setToken('');
+  };
+
   return (
-    <LocalStorage.Provider value={{ token, setToken, handleSetToken }}>
+    <LocalStorage.Provider
+      value={{ token, setToken, handleSetToken, clearToken }}
+    >
       {children}
     </LocalStorage.Provider>
   );

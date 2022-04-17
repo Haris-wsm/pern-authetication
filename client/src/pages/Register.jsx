@@ -119,7 +119,7 @@ const Register = () => {
 
             <InputFormPassword
               value={conFirmPassword}
-              setPassword={setPassword}
+              setPassword={setConfirmPassword}
               id={'password-confirm'}
             />
           </div>

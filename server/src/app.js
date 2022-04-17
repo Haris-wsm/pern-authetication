@@ -2,6 +2,7 @@ const express = require('express');
 const i18next = require('i18next');
 const Backend = require('i18next-fs-backend');
 const middleware = require('i18next-http-middleware');
+const cors = require('cors');
 
 const ErrorsHandler = require('./api/v1/errors/ErrorsHandler');
 const userRouters = require('./api/v1/users/UserRouter');
@@ -9,6 +10,7 @@ const authRouters = require('./api/v1/auth/AuthenticationRouters');
 
 const app = express();
 
+app.use(cors());
 i18next
   .use(Backend)
   .use(middleware.LanguageDetector)

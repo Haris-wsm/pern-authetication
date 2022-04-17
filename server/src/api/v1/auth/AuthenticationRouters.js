@@ -18,6 +18,7 @@ router.post(
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors.array());
       return next(new AuthenticationException());
     }
     const { email, password } = req.body;
@@ -26,6 +27,7 @@ router.post(
     if (!user) return next(new AuthenticationException());
 
     const match = await bcrypt.compare(password, user.password);
+
     if (!match) return next(new AuthenticationException());
 
     if (user.inactive) return next(new ForbiddenException());

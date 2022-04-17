@@ -11,8 +11,6 @@ import { useContext } from 'react';
 function App() {
   const { token } = useContext(LocalStorage);
 
-  console.log(token);
-
   return (
     <Router>
       <Routes>
