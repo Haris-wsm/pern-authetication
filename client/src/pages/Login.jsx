@@ -30,10 +30,10 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await request.post('/auth', { email, password });
-      handleSetToken(res.data.token);
+      handleSetToken(res.data);
       navigate({ pathname: '/' });
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
     }
   };
 

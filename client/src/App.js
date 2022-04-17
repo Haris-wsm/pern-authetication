@@ -5,27 +5,33 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AuthenticateLayout from './layouts/AuthenticateLayout';
 import Home from './pages/Home';
-import { LocalStorage } from './contexts/useLocalStorage';
-import { useContext } from 'react';
+import HomePageLayout from './layouts/HomePageLayout';
+import RequireAuth from './components/auth/RequireAuth ';
+import Profile from './pages/Profile';
 
 function App() {
-  const { token } = useContext(LocalStorage);
-
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            !!token === false ? (
-              <AuthenticateLayout>
-                <Login />
-              </AuthenticateLayout>
-            ) : (
-              <Home />
-            )
-          }
-        />
+        <Route element={<RequireAuth />}>
+          <Route
+            path="/"
+            element={
+              <HomePageLayout>
+                <Home />
+              </HomePageLayout>
+            }
+          />
+          <Route
+            path="/users/:id"
+            element={
+              <HomePageLayout>
+                <Profile />
+              </HomePageLayout>
+            }
+          />
+        </Route>
+
         <Route
           path="/login"
           element={

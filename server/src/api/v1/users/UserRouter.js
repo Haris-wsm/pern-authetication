@@ -2,6 +2,9 @@ const router = require('express').Router();
 const { check, validationResult } = require('express-validator');
 const ValidationErrors = require('../errors/ValidationException');
 const UserService = require('./UserService');
+const ForbiddenException = require('../errors/ForbiddenException');
+const AuthenticationException = require('../auth/AuthenticationException');
+const bcrypt = require('bcrypt');
 
 router.post(
   '/users',
@@ -47,6 +50,18 @@ router.post(
   }
 );
 
+router.get('/users/:id', async (req, res, next) => {
+  if (!req.user || req.user.id != req.params.id) {
+    return next(new ForbiddenException());
+  }
+  try {
+    const user = await UserService.getUser(req.params.id);
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/users/token/:token', async (req, res, next) => {
   try {
     const { token } = req.params;
@@ -57,6 +72,50 @@ router.post('/users/token/:token', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+router.put('/users/:id', async (req, res, next) => {
+  if (!req.user || req.user.id != req.params.id) {
+    return next(new ForbiddenException());
+  }
+
+  try {
+    const user = await UserService.getUser(req.params.id);
+
+    let match;
+
+    if (req.body.password) {
+      match = await bcrypt.compare(req.body.password, user.password);
+
+      if (!match) return next(new ValidationErrors());
+    }
+
+    const updatedUser = await UserService.update(req.body, req.params.id);
+
+    res.send({ user: updatedUser });
+  } catch (error) {
+    console.log(error);
+  }
+
+  // const errors = validationResult(req);
+
+  // if (!errors.isEmpty()) return next(new ValidationErrors(errors.array()));
+
+  // try {
+  //   const user = await UserService.getUser(req.params.id);
+
+  //   if (!user) return next(new AuthenticationException());
+
+  //   const match = await bcrypt.compare(req.body.password, user.password);
+
+  //   if (!match) return next(new AuthenticationException());
+
+  //   if (user.inactive) return next(new ForbiddenException());
+
+  //   const updatedUser = await UserService.update(req.body, req.params.id);
+
+  //   res.send({ user: updatedUser });
+  // } catch (error) {}
 });
 
 module.exports = router;

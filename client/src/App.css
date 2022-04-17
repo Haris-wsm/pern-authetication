@@ -87,6 +87,12 @@
 .logo-content .logo .logo-name {
   font-size: 20px;
   font-weight: 400;
+  opacity: 1;
+  transition: all 1.5s ease;
+}
+
+.sidebar.active .logo .logo-name {
+  opacity: 0;
 }
 
 .sidebar.active #btn {

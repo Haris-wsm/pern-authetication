@@ -26,6 +26,15 @@ const save = async (body) => {
   }
 };
 
+const getUser = async (id) => {
+  const user = await User.findOne({
+    where: { id: id, inactive: false },
+    attributes: ['id', 'username', 'email', 'password']
+  });
+
+  return user;
+};
+
 const findByEmail = async (email) => {
   const user = await User.findOne({ where: { email } });
   return user;
@@ -45,4 +54,27 @@ const activate = async (token) => {
   await user.save();
 };
 
-module.exports = { save, findByEmail, activate };
+const update = async (body, id) => {
+  const { username, newPassword } = body;
+
+  let newBody = {};
+
+  if (newPassword) {
+    const hash = await bcrypt.hash(newPassword, 10);
+    newBody['password'] = hash;
+  }
+
+  if (username) {
+    newBody['username'] = username;
+  }
+
+  const updatedUser = await User.update(newBody, {
+    returning: true,
+    where: { id },
+    attributes: ['id', 'username', 'email']
+  });
+
+  return updatedUser;
+};
+
+module.exports = { save, findByEmail, activate, getUser, update };

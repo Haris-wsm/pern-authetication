@@ -8,6 +8,10 @@ const ErrorsHandler = require('./api/v1/errors/ErrorsHandler');
 const userRouters = require('./api/v1/users/UserRouter');
 const authRouters = require('./api/v1/auth/AuthenticationRouters');
 
+//middleware
+
+const tokenAuthenticate = require('./api/v1/middleware/tokenAuthenticate');
+
 const app = express();
 
 app.use(cors());
@@ -29,6 +33,9 @@ i18next
 
 app.use(middleware.handle(i18next));
 app.use(express.json());
+
+app.use(tokenAuthenticate);
+
 app.use('/api/v1', userRouters);
 app.use('/api/v1', authRouters);
 

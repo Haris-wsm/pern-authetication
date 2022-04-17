@@ -3,8 +3,8 @@ import React, { useState, createContext } from 'react';
 export const LocalStorage = createContext();
 
 export const LocalStorageProvider = ({ children }) => {
-  const [token, setToken] = useState(
-    JSON.parse(localStorage.getItem('user')) || ''
+  const [userToken, setToken] = useState(
+    JSON.parse(localStorage.getItem('user')) || null
   );
 
   const handleSetToken = (value) => {
@@ -19,7 +19,7 @@ export const LocalStorageProvider = ({ children }) => {
 
   return (
     <LocalStorage.Provider
-      value={{ token, setToken, handleSetToken, clearToken }}
+      value={{ userToken, setToken, handleSetToken, clearToken }}
     >
       {children}
     </LocalStorage.Provider>
