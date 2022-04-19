@@ -4,15 +4,17 @@ import request from '../api/authReqest';
 import ProfileField from '../components/form/partials/ProfileField';
 import { LocalStorage } from '../contexts/useLocalStorage';
 
-import NoUserImage from '../asserts/images/no_user.png';
+import ImageInput from '../components/form/partials/ImageInput';
 
 const Profile = () => {
   const { id } = useParams();
   const [isEdit, setIsEdit] = useState(false);
   const [username, setUser] = useState('');
+  const [image, setImage] = useState(null);
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfrimPassword] = useState('');
+  const [uploadImage, setUploadImage] = useState(null);
 
   const { userToken } = useContext(LocalStorage);
 
@@ -34,6 +36,7 @@ const Profile = () => {
 
   const setInitailProfile = (profile) => {
     setUser(profile?.username);
+    setImage(profile?.image);
   };
 
   const handleEdit = () => setIsEdit(!isEdit);
@@ -43,15 +46,23 @@ const Profile = () => {
     const body = {
       username,
       password,
-      newPassword
+      newPassword,
+      image: uploadImage
     };
+    let updatedProfile;
 
     try {
-      const res = await request.put(`/users/${id}`, body);
-      console.log(res.data);
+      updatedProfile = await request.put(`/users/${id}`, body);
     } catch (error) {
       console.log(error.response.data);
     }
+    resetPasswordFields(updatedProfile.data.user);
+  };
+
+  const resetPasswordFields = (body) => {
+    setPassword('');
+    setNewPassword('');
+    setImage(body?.image);
   };
 
   return (
@@ -141,39 +152,12 @@ const Profile = () => {
                 </div>
                 <div className="col-md-6 col-sm-12 py-4 d-flex justify-content-center align-items-start">
                   <div className="position-relative">
-                    <img
-                      src={NoUserImage}
-                      className="img-thumbnail"
-                      alt="user-profile"
-                      width={200}
-                      height={200}
+                    <ImageInput
+                      image={image}
+                      isEdit={isEdit}
+                      setUploadImage={setUploadImage}
+                      uploadImage={uploadImage}
                     />
-
-                    {isEdit && (
-                      <>
-                        <label
-                          htmlFor="profile-image"
-                          style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            right: 0,
-                            width: 25,
-                            height: 25,
-                            fontSize: 12
-                          }}
-                          role="button"
-                          className="bg-danger p-1 rounded-circle d-flex justify-content-center align-items-center"
-                        >
-                          <i className="fa-solid fa-pen-to-square text-white"></i>
-                        </label>
-
-                        <input
-                          type="file"
-                          id="profile-image"
-                          className="d-none"
-                        />
-                      </>
-                    )}
                   </div>
                 </div>
               </div>

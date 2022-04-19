@@ -5,9 +5,11 @@ const User = require('./User');
 const EmailService = require('../email/EmailService');
 const EmailException = require('../email/EmailException');
 const InvalidTokenException = require('./InvalidTokenException');
+const FileService = require('../file/FileService');
+const Role = require('./Role');
 
 const save = async (body) => {
-  const { username, password, email } = body;
+  const { username, password, email, role } = body;
   const hash = await bcrypt.hash(password, 10);
   const user = {
     username,
@@ -16,9 +18,17 @@ const save = async (body) => {
     activationToken: randomString(16)
   };
   const transaction = await sequelize.transaction();
-  await User.create(user, { transaction });
+
+  const [userCreated, userRole] = await Promise.all([
+    await User.create(user, { transaction }),
+    await Role.findOne({ where: { role } })
+  ]);
+
+  await userCreated.addRole(userRole, { transaction });
+
   try {
     await EmailService.sendAccountActivation(email, user.activationToken);
+
     await transaction.commit();
   } catch (error) {
     await transaction.rollback();
@@ -29,7 +39,13 @@ const save = async (body) => {
 const getUser = async (id) => {
   const user = await User.findOne({
     where: { id: id, inactive: false },
-    attributes: ['id', 'username', 'email', 'password']
+    attributes: ['id', 'username', 'email', 'image'],
+    include: [
+      {
+        model: Role,
+        attributes: ['id', 'role']
+      }
+    ]
   });
 
   return user;
@@ -55,26 +71,29 @@ const activate = async (token) => {
 };
 
 const update = async (body, id) => {
-  const { username, newPassword } = body;
+  const { username, newPassword, image } = body;
 
-  let newBody = {};
+  const user = await User.findOne({ where: { id: id } });
 
   if (newPassword) {
     const hash = await bcrypt.hash(newPassword, 10);
-    newBody['password'] = hash;
+    user.password = hash;
   }
 
   if (username) {
-    newBody['username'] = username;
+    user.username = username;
   }
 
-  const updatedUser = await User.update(newBody, {
-    returning: true,
-    where: { id },
-    attributes: ['id', 'username', 'email']
-  });
+  if (image) {
+    if (user.image) {
+      await FileService.deleteProfileImage(user.image);
+    }
+    user.image = await FileService.saveProfileImage(image);
+  }
 
-  return updatedUser;
+  await user.save();
+
+  return { id: user.id, username: user.username, image: user.image };
 };
 
 module.exports = { save, findByEmail, activate, getUser, update };

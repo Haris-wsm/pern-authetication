@@ -15,5 +15,8 @@ module.exports = {
       user: process.env.SMTP_ETHEREAL_USER,
       pass: process.env.SMTP_ETHEREAL_PASSWORD
     }
-  }
+  },
+  uploadDir: 'uploads-dev',
+  profileDir: 'profile',
+  attachmentDir: 'attachment'
 };

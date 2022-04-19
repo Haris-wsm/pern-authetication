@@ -5,6 +5,10 @@ const UserService = require('./UserService');
 const ForbiddenException = require('../errors/ForbiddenException');
 const AuthenticationException = require('../auth/AuthenticationException');
 const bcrypt = require('bcrypt');
+const FileService = require('../file/FileService');
+const {
+  validateUpdateChain
+} = require('../middleware/users/validateRequestUpdate');
 
 router.post(
   '/users',
@@ -14,6 +18,7 @@ router.post(
     .bail()
     .isLength({ min: 4, max: 32 })
     .withMessage('username_size'),
+  check('role').notEmpty().withMessage('role_null'),
   check('email')
     .notEmpty()
     .withMessage('email_null')
@@ -74,9 +79,15 @@ router.post('/users/token/:token', async (req, res, next) => {
   }
 });
 
-router.put('/users/:id', async (req, res, next) => {
+router.put('/users/:id', validateUpdateChain(), async (req, res, next) => {
   if (!req.user || req.user.id != req.params.id) {
     return next(new ForbiddenException());
+  }
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return next(new ValidationErrors(errors.array()));
   }
 
   try {

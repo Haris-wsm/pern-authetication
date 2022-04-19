@@ -16,6 +16,8 @@ const sendAccountActivation = async (email, token) => {
         </div>
         `
   });
+
+  console.log(nodemailer.getTestMessageUrl(info));
 };
 
 module.exports = { sendAccountActivation };

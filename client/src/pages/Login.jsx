@@ -8,6 +8,7 @@ import { LocalStorage } from '../contexts/useLocalStorage';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
   const navigate = useNavigate();
   const search = useLocation().search;
   const token = new URLSearchParams(search).get('token');
@@ -35,6 +36,10 @@ const Login = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleChangeChecked = (e) => {
+    setRole(e.target.value);
   };
 
   return (
@@ -70,6 +75,36 @@ const Login = () => {
               />
             </div>
           </div>
+
+          <div className="mb-4 d-flex justify-content-evenly align-items-center">
+            <div className="form-check  ">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value="teacher"
+                name="role[]"
+                onChange={handleChangeChecked}
+                checked={role === 'teacher'}
+              />
+              <small id="emailHelp" className="form-text text-white">
+                Teacher
+              </small>
+            </div>
+            <div className="form-check  ">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value="student"
+                name="role[]"
+                onChange={handleChangeChecked}
+                checked={role === 'student'}
+              />
+              <small id="emailHelp" className="form-text text-white">
+                Student
+              </small>
+            </div>
+          </div>
+
           <div className="mb-4 w-100">
             <small id="emailHelp" className="form-text text-muted">
               New User?

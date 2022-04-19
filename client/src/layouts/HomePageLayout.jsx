@@ -62,10 +62,9 @@ const HomePageLayout = ({ children }) => {
             <div className="profile-details">
               <img src={NoUserImage} alt="no-user" />
               <div className="name-job">
-                <div className="name">{`${`Haris Waesamahhhhh`.substring(
-                  0,
-                  15
-                )}${`Haris Waesamahhhhh`.length > 15 ? '...' : ''}`}</div>
+                <div className="name">{`${userToken.username.substring(0, 15)}${
+                  userToken.username.length > 15 ? '...' : ''
+                }`}</div>
               </div>
             </div>
             <i

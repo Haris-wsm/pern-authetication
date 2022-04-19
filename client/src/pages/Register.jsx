@@ -2,19 +2,22 @@ import React, { useContext, useState } from 'react';
 import InputFormPassword from '../components/form/InputFormPassword';
 import { LocalStorage } from '../contexts/useLocalStorage';
 import request from '../api/authReqest';
+import { useNavigate } from 'react-router';
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [conFirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('student');
+
   const [errors, setErrors] = useState({
     username: '',
     password: '',
     confirmPassword: ''
   });
 
-  const { handleSetToken } = useContext(LocalStorage);
+  const navigate = useNavigate();
 
   const handlePasswordConfirm = async (e) => {
     e.preventDefault();
@@ -29,15 +32,13 @@ const Register = () => {
     const body = {
       username,
       email,
-      password
+      password,
+      role
     };
-
-    console.log(body);
 
     try {
       const res = await request.post('/users', body);
-
-      console.log(res.data);
+      navigate('/register/sendmail', { state: { email } });
     } catch (error) {
       console.log(error.response.data);
     }
@@ -49,16 +50,12 @@ const Register = () => {
     setUsername(e.target.value);
   };
 
-  const handleChangePassword = (e) => {
-    setPassword(e.target.value);
-  };
-
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
   };
 
-  const handleChangeConfirmPassword = (e) => {
-    setConfirmPassword(e.target.value);
+  const handleChangeChecked = (e) => {
+    setRole(e.target.value);
   };
 
   return (
@@ -122,6 +119,35 @@ const Register = () => {
               setPassword={setConfirmPassword}
               id={'password-confirm'}
             />
+          </div>
+
+          <div className="mb-3 d-flex justify-content-evenly align-items-center">
+            <div className="form-check  ">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value="teacher"
+                name="role[]"
+                onChange={handleChangeChecked}
+                checked={role === 'teacher'}
+              />
+              <small id="emailHelp" className="form-text text-white">
+                Teacher
+              </small>
+            </div>
+            <div className="form-check  ">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value="student"
+                name="role[]"
+                onChange={handleChangeChecked}
+                checked={role === 'student'}
+              />
+              <small id="emailHelp" className="form-text text-white">
+                Student
+              </small>
+            </div>
           </div>
 
           <div className="mb-4 w-100"></div>

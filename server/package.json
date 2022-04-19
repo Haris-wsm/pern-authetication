@@ -6,7 +6,11 @@
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "test": "cross-env NODE_ENV=test jest --watchAll --verbose",
     "test:staging": "cross-env NODE_ENV=test jest --all --runInBand --forceExit",
-    "migrate:test": "cross-env NODE_ENV=test npx sequelize db:migrate"
+    "migrate:test": "cross-env NODE_ENV=test npx sequelize db:migrate",
+    "migrate:dev": "cross-env NODE_ENV=development npx sequelize db:migrate",
+    "migrate:dev:undo": "cross-env NODE_ENV=development npx sequelize db:migrate:undo",
+    "seed:dev": "cross-env NODE_ENV=development npx sequelize db:seed:all",
+    "cleanup": "cross-env NODE_ENV=development node cleanup.js"
   },
   "jest": {
     "watchPlugins": [
@@ -30,9 +34,11 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "express-validator": "^6.14.0",
+    "file-type": "^14.7.0",
     "i18next": "^21.6.16",
     "i18next-fs-backend": "^1.1.4",
     "i18next-http-middleware": "^3.2.0",
+    "multer": "^1.4.4",
     "nodemailer": "^6.7.3",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",

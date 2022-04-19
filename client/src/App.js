@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AuthenticateLayout from './layouts/AuthenticateLayout';
@@ -8,6 +9,7 @@ import Home from './pages/Home';
 import HomePageLayout from './layouts/HomePageLayout';
 import RequireAuth from './components/auth/RequireAuth ';
 import Profile from './pages/Profile';
+import SendEmail from './pages/SendEmail';
 
 function App() {
   return (
@@ -45,6 +47,14 @@ function App() {
           element={
             <AuthenticateLayout>
               <Register />
+            </AuthenticateLayout>
+          }
+        />
+        <Route
+          path="/register/sendmail"
+          element={
+            <AuthenticateLayout>
+              <SendEmail />
             </AuthenticateLayout>
           }
         />
