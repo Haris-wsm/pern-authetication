@@ -17,7 +17,7 @@ FileAttachment.init(
       type: Sequelize.STRING
     }
   },
-  { sequelize, modelName: 'fileAttachment', timestamps: false }
+  { sequelize, modelName: 'file_attachment', timestamps: false }
 );
 
 module.exports = FileAttachment;

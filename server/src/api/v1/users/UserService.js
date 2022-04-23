@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const Sequelize = require('sequelize');
 const sequelize = require('../../../database/config');
 const { randomString } = require('../shared/generator');
 const User = require('./User');
@@ -34,6 +35,16 @@ const save = async (body) => {
     await transaction.rollback();
     throw new EmailException();
   }
+};
+
+const getUsers = async (id) => {
+  const users = await User.findAll({
+    where: { id: { [Sequelize.Op.ne]: id } },
+    attributes: { exclude: ['password', 'inactive'] },
+    include: { model: Role, attributes: ['id', 'role'] }
+  });
+
+  return users;
 };
 
 const getUser = async (id) => {
@@ -96,4 +107,4 @@ const update = async (body, id) => {
   return { id: user.id, username: user.username, image: user.image };
 };
 
-module.exports = { save, findByEmail, activate, getUser, update };
+module.exports = { save, findByEmail, activate, getUser, getUsers, update };

@@ -3,6 +3,8 @@ const sequelize = require('../../../database/config');
 const Token = require('../auth/Token');
 const FileAttachment = require('../file/FileAttachment');
 const Role = require('./Role');
+const Item = require('../items/Items');
+const Booking = require('./Booking');
 
 const Model = Sequelize.Model;
 
@@ -32,5 +34,22 @@ Role.belongsToMany(User, {
   through: 'users_roles',
   foreignKey: 'roleId'
 });
+
+User.belongsToMany(Item, {
+  through: 'users_items',
+  foreignKey: 'userId'
+});
+
+Item.belongsToMany(User, {
+  through: 'users_items',
+  foreignKey: 'itemId'
+});
+
+// User <==> Booking
+
+User.hasMany(Booking, { foreignKey: 'userId', onDelete: 'cascade' });
+Booking.belongsTo(User);
+Item.hasMany(Booking, { foreignKey: 'itemId', onDelete: 'cascade' });
+Booking.belongsTo(Item);
 
 module.exports = User;

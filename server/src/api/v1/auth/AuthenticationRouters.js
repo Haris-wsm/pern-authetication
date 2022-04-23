@@ -21,6 +21,7 @@ router.post(
       console.log(errors.array());
       return next(new AuthenticationException());
     }
+
     const { email, password } = req.body;
     const user = await UserService.findByEmail(email);
 
@@ -34,7 +35,12 @@ router.post(
 
     const token = await TokenService.createToken(user);
 
-    res.send({ id: user.id, username: user.username, token });
+    res.send({
+      id: user.id,
+      username: user.username,
+      token,
+      image: user.image
+    });
   }
 );
 

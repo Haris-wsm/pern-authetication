@@ -1,4 +1,5 @@
 const TokenServices = require('../auth/TokenService');
+const UserService = require('../users/UserService');
 
 module.exports = async (req, res, next) => {
   const authorization = req.headers.authorization;
@@ -6,8 +7,10 @@ module.exports = async (req, res, next) => {
     const token = authorization.substring(7);
 
     try {
-      const user = await TokenServices.verify(token);
-      req.user = user;
+      const { id } = await TokenServices.verify(token);
+      const user = await UserService.getUser(id);
+
+      if (user) req.user = user;
     } catch (error) {}
   }
 

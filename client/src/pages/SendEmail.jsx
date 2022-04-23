@@ -13,7 +13,7 @@ const SendEmail = () => {
         </h2>
         <div className="d-flex my-4">
           <p className="text-white mx-3">Please confirm at email</p>
-          <p class="badge rounded-pill bg-light text-dark">
+          <p className="badge rounded-pill bg-light text-dark">
             {location.state?.email}
           </p>
         </div>

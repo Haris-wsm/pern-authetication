@@ -10,6 +10,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [conFirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('student');
+  const [isLoad, setIsLoad] = useState(false);
 
   const [errors, setErrors] = useState({
     username: '',
@@ -37,7 +38,10 @@ const Register = () => {
     };
 
     try {
+      setIsLoad(true);
       const res = await request.post('/users', body);
+      setIsLoad(false);
+
       navigate('/register/sendmail', { state: { email } });
     } catch (error) {
       console.log(error.response.data);
@@ -152,9 +156,19 @@ const Register = () => {
 
           <div className="mb-4 w-100"></div>
           <div className="d-flex justify-content-end w-100">
-            <button className="btn btn-primary" onClick={handlePasswordConfirm}>
-              Submit
-            </button>
+            {isLoad ? (
+              <div className="spinner-border text-white" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            ) : (
+              <button
+                className="btn btn-primary btn-block"
+                onClick={handlePasswordConfirm}
+                disabled={isLoad}
+              >
+                Submit
+              </button>
+            )}
           </div>
         </div>
       </div>

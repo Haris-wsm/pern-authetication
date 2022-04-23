@@ -5,15 +5,16 @@ const FileType = require('file-type');
 const { randomString } = require('../shared/generator');
 const FileAttactment = require('../file/FileAttachment');
 
-const { uploadDir, profileDir } = config;
+const { uploadDir, profileDir, attachmentDir } = config;
 const profileFolder = path.join('.', uploadDir, profileDir);
+const attachmentsFolder = path.join('.', uploadDir, attachmentDir);
 
 const createFolders = () => {
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
   if (!fs.existsSync(profileFolder)) fs.mkdirSync(profileFolder);
 
-  // if (!fs.existsSync(attachmentsFolder)) fs.mkdirSync(attachmentsFolder);
+  if (!fs.existsSync(attachmentsFolder)) fs.mkdirSync(attachmentsFolder);
 };
 
 const saveProfileImage = async (base64File) => {
@@ -43,10 +44,55 @@ const deleteProfileImage = async (filename) => {
   await fs.promises.unlink(filePath);
 };
 
+const saveAttachment = async (file) => {
+  const type = await FileType.fromBuffer(file.buffer);
+
+  let fileType;
+  let filename = randomString(32);
+  if (type) {
+    fileType = type.mime;
+    filename += `.${type.ext}`;
+  }
+  await fs.promises.writeFile(
+    path.join(attachmentsFolder, filename),
+    file.buffer
+  );
+  const savedAttachment = await FileAttactment.create({
+    filename,
+    uploadDate: new Date(),
+    fileType: fileType
+  });
+
+  return { id: savedAttachment.id };
+};
+
+const associateFileToItem = async (attachmentId, itemId) => {
+  const attachment = await FileAttactment.findOne({
+    where: { id: attachmentId }
+  });
+
+  if (!attachment) return;
+
+  if (attachment.itemId) return;
+  attachment.itemId = itemId;
+  await attachment.save();
+};
+
+const deleteFileBelongToItem = (filename) => {
+  const filePath = path.join(attachmentsFolder, filename);
+  try {
+    fs.promises.access(filePath);
+    fs.promises.unlink(filePath);
+  } catch (error) {}
+};
+
 module.exports = {
   saveProfileImage,
   isLessThan2MB,
   isSupportedFileType,
   createFolders,
-  deleteProfileImage
+  deleteProfileImage,
+  saveAttachment,
+  associateFileToItem,
+  deleteFileBelongToItem
 };

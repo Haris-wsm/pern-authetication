@@ -3,12 +3,15 @@ const { check, validationResult } = require('express-validator');
 const ValidationErrors = require('../errors/ValidationException');
 const UserService = require('./UserService');
 const ForbiddenException = require('../errors/ForbiddenException');
-const AuthenticationException = require('../auth/AuthenticationException');
 const bcrypt = require('bcrypt');
 const FileService = require('../file/FileService');
+
+const tokenAuthenticate = require('../middleware/tokenAuthenticate');
+
 const {
   validateUpdateChain
 } = require('../middleware/users/validateRequestUpdate');
+const restrictTo = require('../middleware/restrictTo');
 
 router.post(
   '/users',
@@ -49,6 +52,20 @@ router.post(
     try {
       await UserService.save(req.body);
       res.send({ message: req.t('user_create_success') });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  '/users',
+  tokenAuthenticate,
+  restrictTo('teacher', 'admin', 'student'),
+  async (req, res, next) => {
+    try {
+      const users = await UserService.getUsers(req.user.id);
+      res.send({ users });
     } catch (error) {
       next(error);
     }
@@ -107,26 +124,6 @@ router.put('/users/:id', validateUpdateChain(), async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
-
-  // const errors = validationResult(req);
-
-  // if (!errors.isEmpty()) return next(new ValidationErrors(errors.array()));
-
-  // try {
-  //   const user = await UserService.getUser(req.params.id);
-
-  //   if (!user) return next(new AuthenticationException());
-
-  //   const match = await bcrypt.compare(req.body.password, user.password);
-
-  //   if (!match) return next(new AuthenticationException());
-
-  //   if (user.inactive) return next(new ForbiddenException());
-
-  //   const updatedUser = await UserService.update(req.body, req.params.id);
-
-  //   res.send({ user: updatedUser });
-  // } catch (error) {}
 });
 
 module.exports = router;

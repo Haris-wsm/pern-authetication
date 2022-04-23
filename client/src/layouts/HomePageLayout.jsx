@@ -60,7 +60,14 @@ const HomePageLayout = ({ children }) => {
         <div className="profile-content">
           <div className="profile">
             <div className="profile-details">
-              <img src={NoUserImage} alt="no-user" />
+              <img
+                src={`${
+                  userToken.image
+                    ? `${process.env.REACT_APP_SERVER_DNS}/images/${userToken.image}`
+                    : NoUserImage
+                }`}
+                alt="no-user"
+              />
               <div className="name-job">
                 <div className="name">{`${userToken.username.substring(0, 15)}${
                   userToken.username.length > 15 ? '...' : ''
